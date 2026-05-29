@@ -1,0 +1,37 @@
+body {
+  transition: background-color .25s, color .25s;
+  color: var(--color-text);
+  background-color: var(--color-body);
+  color-scheme: var(--color-scheme);
+}
+
+:root {
+  --navbar-font-size: 18px;
+}
+
+/* 美化滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-body);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text);
+  border-radius: 4px;
+  opacity: 0.3;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.5;
+}
+
+/* Firefox 滚动条样式 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-text) var(--color-body);
+}
