@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import MealRecordItem from "./MealRecordItem.vue";
 import { Add } from "@vicons/ionicons5";
+import { useMealStore } from "../../stores/useMealStore.ts";
+
+const mealStore = useMealStore();
 </script>
 
 <template>
@@ -16,9 +19,7 @@ import { Add } from "@vicons/ionicons5";
     </template>
     <template #default>
       <n-list style="height: 252px; overflow-y: auto; padding-right: 4px">
-        <MealRecordItem />
-        <MealRecordItem />
-        <MealRecordItem />
+        <MealRecordItem v-for="item in mealStore.todayMealRecords" :key="item.id" :item="item" />
       </n-list>
     </template>
   </n-card>

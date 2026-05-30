@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { LogoGithub, NutritionOutline, Language } from "@vicons/ionicons5";
 import ChatBox from "../components/ChatBox.vue";
 import DashBoard from "../components/DashBoard.vue";
+import { seedMockData } from "../mock/index";
+
+onMounted(async () => {
+  await seedMockData();
+});
 </script>
 
 <template>
