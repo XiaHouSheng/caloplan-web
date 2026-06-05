@@ -4,9 +4,11 @@ import { LogoGithub, NutritionOutline, Language } from "@vicons/ionicons5";
 import ChatBox from "../components/ChatBox.vue";
 import DashBoard from "../components/DashBoard.vue";
 import { seedMockData } from "../mock/index";
+import { checkInCount } from "../utils/checkIn";
 
 onMounted(async () => {
   await seedMockData();
+  checkInCount();
 });
 </script>
 

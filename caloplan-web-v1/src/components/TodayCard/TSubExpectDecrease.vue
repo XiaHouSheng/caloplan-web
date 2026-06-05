@@ -6,10 +6,14 @@ import { GridComponent, TooltipComponent } from "echarts/components";
 import VChart from "vue-echarts";
 import { ref } from "vue";
 import type { EChartsOption } from "echarts";
+import { useWeightRecordStore } from "../../stores/useWeightRecord";
 
 // 注册 line 图、grid、tooltip、canvas renderer
 use([CanvasRenderer, LineChart, GridComponent, TooltipComponent]);
 
+const weightRecordStore = useWeightRecordStore();
+const records = weightRecordStore.weekWeightRecords;
+const weights = records.map((record) => record ? record.weight : null);
 const option = ref<EChartsOption>({
   grid: {
     left: 0,
@@ -47,8 +51,9 @@ const option = ref<EChartsOption>({
   series: [
     {
       name: "Trend",
-      data: [820, 932, 901, 934, 1290, 1330, 1320],
+      data: weights,
       type: "line",
+      connectNulls: false,
       smooth: 0.2,
       symbol: "none",
       lineStyle: {

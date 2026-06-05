@@ -7,7 +7,6 @@ const props = defineProps({
     default: () => {},
   },
 });
-console.log(props.item);
 const sumKcal = props.item.entries.reduce((acc, cur) => acc + cur.kcal, 0);
 const content = props.item.entries
   .map((item) => item.amount + item.name)

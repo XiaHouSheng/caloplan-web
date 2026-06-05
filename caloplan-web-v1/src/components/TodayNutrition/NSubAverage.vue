@@ -4,6 +4,7 @@ import VChart from "vue-echarts";
 import type { EChartsOption } from "echarts";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
+import { useMealStore } from "../../stores/useMealStore";
 import { LineChart } from "echarts/charts";
 import {
   GridComponent,
@@ -18,6 +19,8 @@ use([
   TooltipComponent,
   LegendComponent,
 ]);
+
+const mealStore = useMealStore()
 
 const option = ref<EChartsOption>({
   tooltip: {
@@ -55,7 +58,7 @@ const option = ref<EChartsOption>({
   },
   xAxis: {
     type: "category",
-    data: ["5/18", "5/19", "5/20", "5/21", "5/22", "5/23", "5/24"],
+    data: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     axisLabel: { fontSize: 10 },
     axisLine: { show: true },
     axisTick: { show: false },
@@ -63,7 +66,7 @@ const option = ref<EChartsOption>({
   yAxis: {
     type: "value",
     min: 0,
-    max: 1500,
+    max: 2000,
     interval: 300,
     axisLabel: { fontSize: 10 },
     splitLine: { show: false },
@@ -79,12 +82,7 @@ const option = ref<EChartsOption>({
       itemStyle: { color: "#F37F24" },
       lineStyle: { color: "#F37F24", width: 2 },
       data: [
-        1200,
-        1080,
-        1220,
-        1060,
-        1040,
-        900,
+        ...mealStore.day7KcalData.ylabel,
         {
           value: 900,
           itemStyle: {

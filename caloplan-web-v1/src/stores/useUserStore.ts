@@ -16,7 +16,8 @@ export const useUserStore = defineStore(
       gender: "male",
       nowWeight: 70,
       targetWeight: 70,
-      targetDate: undefined,
+      checkInCount: 0,
+      lastCheckInDate: "2026-06-05",
       avatarUrl: undefined,
       createdAt: new Date().toISOString(),
     });

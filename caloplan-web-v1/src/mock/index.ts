@@ -24,6 +24,8 @@ const user: UserProfile = {
   nowWeight: 78,
   targetWeight: 72,
   targetDate: "2026-08-01",
+  checkInCount: 1,
+  lastCheckInDate: "2026-06-5",
   avatarUrl: undefined,
   createdAt: new Date().toISOString(),
 };

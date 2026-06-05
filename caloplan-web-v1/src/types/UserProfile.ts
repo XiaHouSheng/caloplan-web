@@ -9,6 +9,8 @@ interface UserProfile {
   nowWeight: number; // 当前体重 kg
   targetWeight: number; // 目标体重 kg
   targetDate?: string; // 目标达成日期
+  checkInCount?: number; // 打卡次数
+  lastCheckInDate?: string; // 最后打卡日期
   avatarUrl?: string; // 头像（后端存储）
   createdAt: string;
 }
@@ -25,6 +27,7 @@ function createUserProfile(
     nowWeight: raw.nowWeight,
     targetWeight: raw.targetWeight,
     targetDate: raw.targetDate || undefined,
+    checkInCount: raw.checkInCount || 0,
     avatarUrl: raw.avatarUrl || undefined,
     createdAt: new Date().toISOString(),
   };

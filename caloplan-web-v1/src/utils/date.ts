@@ -1,10 +1,9 @@
+import dayjs from "dayjs";
+import weekday from "dayjs/plugin/weekday";
+dayjs.extend(weekday);
+
 function pad(n: number): string {
   return String(n).padStart(2, "0");
-}
-
-function getTodayDate(): string {
-  const date = new Date();
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 function formatDate(date: Date, withYear: boolean = true): string {
@@ -13,4 +12,23 @@ function formatDate(date: Date, withYear: boolean = true): string {
   return withYear ? `${date.getFullYear()}-${m}-${d}` : `${m}-${d}`;
 }
 
-export { getTodayDate, formatDate };
+function getTodayDate(): string {
+  const date = new Date();
+  return formatDate(date);
+}
+
+function getYesterdayDate(): string {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  return formatDate(date);
+}
+
+function getWeekDay(which: number): string {
+  return dayjs().weekday(which).format("YYYY-MM-DD");
+}
+
+function convertToDate(date: string): Date {
+  return new Date(date);
+}
+
+export { getTodayDate, formatDate, getYesterdayDate, convertToDate, getWeekDay };

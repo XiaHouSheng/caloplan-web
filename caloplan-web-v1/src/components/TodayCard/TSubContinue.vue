@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+import { useUserStore } from '../../stores/useUserStore';
+const userStore = useUserStore();
+const checkInCount = userStore.profile.checkInCount || 0;
+</script>
 
 <template>
   <!--今日体重-->
@@ -10,7 +14,7 @@
     </n-flex>
     <!--水平方向-content-->
     <n-flex align="baseline" :size="8">
-      <n-text style="font-size: 24px; font-weight: 700" strong>5</n-text>
+      <n-text style="font-size: 24px; font-weight: 700" strong>{{ checkInCount }}</n-text>
       <span>天</span>
     </n-flex>
     <!--水平方向-foot-->

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { formatDate } from "../utils/date";
+import { formatDate, getWeekDay } from "../utils/date";
 import { type MealEntry, createMealEntry } from "../types/MealEntry";
 import { type MealRecord, createMealRecord } from "../types/MealRecord";
 export const useMealStore = defineStore("meal", () => {
@@ -14,11 +14,9 @@ export const useMealStore = defineStore("meal", () => {
 
   const day7KcalData = computed(() => {
     let kcal: number = 0;
-    let xlabel: string[] = [];
-    let ylabel: number[] = [];
-    for (let i = 0; i < 7; i++) {
-      let date = new Date(new Date().getTime() - i * 24 * 60 * 60 * 1000);
-      let day = formatDate(date);
+    let ylabel: any[] = [];
+    for (let i = 1; i < 8; i++) {
+      let day = getWeekDay(i);
       let records = mealRecords.value.filter((record) => record.date === day);
       if (records.length > 0) {
         let totalKcal = 0;
@@ -29,14 +27,14 @@ export const useMealStore = defineStore("meal", () => {
           );
         }
         kcal += totalKcal;
-        xlabel.push(formatDate(date, false));
         ylabel.push(totalKcal);
+      }else{
+        ylabel.push(null);
       }
     }
     return {
       average: kcal / 7,
       sum: kcal,
-      xlabel,
       ylabel,
     };
   });
