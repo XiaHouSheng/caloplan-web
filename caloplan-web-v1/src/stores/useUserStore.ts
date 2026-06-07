@@ -21,25 +21,29 @@ export const useUserStore = defineStore(
       avatarUrl: undefined,
       createdAt: new Date().toISOString(),
     });
-    // 初始化营养目标
-    const nutritionTarget = ref<NutritionTarget>({
-      dailyKcal: 2000,
-      protein: 100,
-      carbs: 200,
-      fat: 50,
-      id: nanoid(),
-      createdAt: new Date().toISOString(),
-    });
-    // BMI
-    const bmi = computed(() => {
-      return profile.value.nowWeight / (profile.value.height / 100) ** 2;
-    });
+
+    // 是否自动计算BMR
+    const autoCalBmr = ref(true);
 
     // BMR
     const bmr = computed(() => {
       const { nowWeight, height, age, gender } = profile.value;
       const base = 10 * nowWeight + 6.25 * height - 5 * age;
       return gender === "male" ? base + 5 : base - 161;
+    });
+
+    // 初始化营养目标
+    const nutritionTarget = computed<NutritionTarget>(() => ({
+      dailyKcal: autoCalBmr.value ? Math.round(bmr.value) : 2000,
+      protein: 100,
+      carbs: 200,
+      fat: 50,
+      id: nanoid(),
+      createdAt: new Date().toISOString(),
+    }));
+    // BMI
+    const bmi = computed(() => {
+      return profile.value.nowWeight / ((profile.value.height / 100) ** 2);
     });
 
     function updateProfile(newProfile: UserProfile) {

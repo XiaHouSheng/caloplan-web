@@ -7,7 +7,7 @@ import { seedMockData } from "../mock/index";
 import { checkInCount } from "../utils/checkIn";
 
 onMounted(async () => {
-  await seedMockData();
+  //await seedMockData();
   checkInCount();
 });
 </script>

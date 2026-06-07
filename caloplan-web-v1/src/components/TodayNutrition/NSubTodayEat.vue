@@ -6,7 +6,17 @@ import { TooltipComponent } from "echarts/components";
 import VChart from "vue-echarts";
 import { ref } from "vue";
 import type { EChartsOption } from "echarts";
-import { Pencil } from "@vicons/ionicons5";
+import { useUserStore } from "../../stores/useUserStore";
+import { useMealStore } from "../../stores/useMealStore";
+
+const userStore = useUserStore();
+const mealStore = useMealStore();
+const nutritionTarget = userStore.nutritionTarget ?? {};
+const todayNutritionSum = mealStore.todayNutritionSum ?? {};
+const deltaKcal = nutritionTarget.dailyKcal - todayNutritionSum.kcal;
+const rate = Math.round(
+  (todayNutritionSum.kcal / nutritionTarget.dailyKcal) * 100,
+);
 
 use([CanvasRenderer, PieChart, TooltipComponent]);
 
@@ -31,7 +41,7 @@ const option = ref<EChartsOption>({
       label: {
         show: true,
         position: "center",
-        formatter: "{total|1200}\n/1400kcal",
+        formatter: `{total|${todayNutritionSum.kcal}}\n/${nutritionTarget.dailyKcal}`,
         fontSize: 14,
         lineHeight: 22,
         color: "#6b7280",
@@ -48,9 +58,9 @@ const option = ref<EChartsOption>({
         show: false,
       },
       data: [
-        { value: 95, name: "碳水" },
-        { value: 45, name: "蛋白质" },
-        { value: 25, name: "脂肪" },
+        { value: todayNutritionSum.carbs, name: "碳水" },
+        { value: todayNutritionSum.protein, name: "蛋白质" },
+        { value: todayNutritionSum.fat, name: "脂肪" },
       ],
     },
   ],
@@ -63,14 +73,7 @@ const option = ref<EChartsOption>({
       content: true,
     }"
   >
-    <template #header-extra>
-      <n-button size="small">
-        编辑目标
-        <n-icon>
-          <Pencil />
-        </n-icon>
-      </n-button>
-    </template>
+    <template #header-extra> </template>
     <template #header>
       <n-text style="font-weight: bold">今日摄入预览</n-text>
     </template>
@@ -83,33 +86,41 @@ const option = ref<EChartsOption>({
           <n-flex :size="8" align="center" inline>
             <n-badge dot color="#16C4FE"></n-badge>
             <n-text>剩余热量</n-text>
-            <n-text style="font-weight: bold; margin-left: auto">1200</n-text>
+            <n-text style="font-weight: bold; margin-left: auto">
+              {{ deltaKcal }}
+            </n-text>
             <n-text>kcal</n-text>
           </n-flex>
           <n-flex :size="8" align="center" inline>
             <n-badge dot color="#7c3aed"></n-badge>
             <n-text>碳水</n-text>
-            <n-text style="font-weight: bold; margin-left: auto">1200</n-text>
-            <n-text>kcal</n-text>
+            <n-text style="font-weight: bold; margin-left: auto">
+              {{ todayNutritionSum.carbs }}/{{ nutritionTarget.carbs }}
+            </n-text>
+            <n-text>g</n-text>
           </n-flex>
           <n-flex :size="8" align="center" inline>
             <n-badge dot color="#10b981"></n-badge>
             <n-text>蛋白质</n-text>
-            <n-text style="font-weight: bold; margin-left: auto">1200</n-text>
-            <n-text>kcal</n-text>
+            <n-text style="font-weight: bold; margin-left: auto">
+              {{ todayNutritionSum.protein }}/{{ nutritionTarget.protein }}
+            </n-text>
+            <n-text>g</n-text>
           </n-flex>
           <n-flex :size="8" align="center" inline>
             <n-badge dot color="#f59e0b"></n-badge>
             <n-text>脂肪</n-text>
-            <n-text style="font-weight: bold; margin-left: auto">1200</n-text>
-            <n-text>kcal</n-text>
+            <n-text style="font-weight: bold; margin-left: auto">
+              {{ todayNutritionSum.fat }}/{{ nutritionTarget.fat }}
+            </n-text>
+            <n-text>g</n-text>
           </n-flex>
         </n-flex>
         <!-- 进度条 -->
         <n-progress
           type="line"
           color="#16C4FE"
-          :percentage="50"
+          :percentage="rate"
           :height="12"
           :border-radius="12"
           :fill-border-radius="0"
@@ -117,9 +128,9 @@ const option = ref<EChartsOption>({
         />
         <n-flex style="width: 100%" :size="8" align="center" inline>
           <n-text>已摄入</n-text>
-          <n-text>50%</n-text>
+          <n-text>{{ rate }}%</n-text>
           <n-text style="margin-left: auto">目标</n-text>
-          <n-text>1469</n-text>
+          <n-text>{{ nutritionTarget.dailyKcal }}</n-text>
           <n-text>kcal</n-text>
         </n-flex>
       </n-flex>

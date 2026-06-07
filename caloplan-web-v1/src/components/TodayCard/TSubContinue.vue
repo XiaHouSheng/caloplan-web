@@ -1,7 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '../../stores/useUserStore';
 const userStore = useUserStore();
-const checkInCount = userStore.profile.checkInCount || 0;
+const checkInCount = userStore.profile.checkInCount ?? 0;
 </script>
 
 <template>

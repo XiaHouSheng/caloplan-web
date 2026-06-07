@@ -1,30 +1,107 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Scale, Flash } from "@vicons/ionicons5";
+import { ref, watch } from "vue";
+import { Scale, Flash, Person, NutritionOutline } from "@vicons/ionicons5";
+import { useUserStore } from "../../stores/useUserStore";
+import { useWeightRecordStore } from "../../stores/useWeightRecord";
+import { getTodayDate, convertToDate } from "../../utils/date";
 
-defineProps<{
+const userStore = useUserStore();
+const weightRecordStore = useWeightRecordStore();
+
+const props = defineProps<{
   show: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "update:show", val: boolean): void;
-  (e: "confirm", weight: number, kcalConsumed: number): void;
 }>();
 
+const activeTab = ref<string>("checkIn");
+
+// Tab 1: 打卡
 const weight = ref<number | null>(null);
 const kcalConsumed = ref<number | null>(null);
 
-function handleConfirm() {
+// Tab 2: 个人设置
+const editName = ref("");
+const editHeight = ref<number | null>(null);
+const editAge = ref<number | null>(null);
+const editGender = ref<"male" | "female">("male");
+const editNowWeight = ref<number | null>(null);
+const editTargetWeight = ref<number | null>(null);
+const editTargetDate = ref<number | null>(null);
+const editDailyKcal = ref<number | null>(null);
+const editProtein = ref<number | null>(null);
+const editCarbs = ref<number | null>(null);
+const editFat = ref<number | null>(null);
+
+watch(
+  () => props.show,
+  (val) => {
+    if (val) {
+      activeTab.value = "checkIn";
+      // 从 store 填充编辑表单
+      const p = userStore.profile;
+      editName.value = p.name || "";
+      editHeight.value = p.height || null;
+      editAge.value = p.age || null;
+      editGender.value = p.gender || "male";
+      editNowWeight.value = p.nowWeight || null;
+      editTargetWeight.value = p.targetWeight || null;
+      editTargetDate.value = p.targetDate
+        ? new Date(p.targetDate).getTime()
+        : null;
+
+      const nt = userStore.nutritionTarget;
+      editDailyKcal.value = nt.dailyKcal || null;
+      editProtein.value = nt.protein || null;
+      editCarbs.value = nt.carbs || null;
+      editFat.value = nt.fat || null;
+    }
+  },
+);
+
+function handleCheckIn() {
+  const latestTime = convertToDate(weightRecordStore.latestWeightRecord.date).getTime();
   if (weight.value === null || kcalConsumed.value === null) return;
-  emit("confirm", weight.value, kcalConsumed.value);
-  resetAndClose();
+  userStore.updateWeight(weight.value);
+  if (latestTime === convertToDate(getTodayDate()).getTime()){
+    weightRecordStore.updateTodayWeight(weight.value);
+  }else{
+    weightRecordStore.addWeightRecord({ weight: weight.value });
+  }
+  weight.value = null;
+  kcalConsumed.value = null;
+  emit("update:show", false);
+}
+
+function handleSaveProfile() {
+  const targetDate = editTargetDate.value
+    ? new Date(editTargetDate.value).toISOString().split("T")[0]
+    : undefined;
+
+  userStore.updateProfile({
+    ...userStore.profile,
+    name: editName.value,
+    height: editHeight.value ?? userStore.profile.height,
+    age: editAge.value ?? userStore.profile.age,
+    gender: editGender.value,
+    nowWeight: editNowWeight.value ?? userStore.profile.nowWeight,
+    targetWeight: editTargetWeight.value ?? userStore.profile.targetWeight,
+    targetDate: targetDate,
+  });
+
+  userStore.updateNutritionTarget(
+    editDailyKcal.value ?? 2000,
+    editProtein.value ?? 100,
+    editCarbs.value ?? 200,
+    editFat.value ?? 50,
+  );
+
+  emit("update:show", false);
 }
 
 function handleCancel() {
-  resetAndClose();
-}
-
-function resetAndClose() {
   weight.value = null;
   kcalConsumed.value = null;
   emit("update:show", false);
@@ -35,13 +112,12 @@ function resetAndClose() {
   <n-modal
     :show="show"
     preset="card"
-    title="每日记录打卡"
-    style="width: 420px"
+    style="width: 460px"
     :bordered="false"
     :mask-closable="false"
     :segmented="false"
     header-style="padding: 20px 24px 0 24px;"
-    content-style="padding: 8px 24px;"
+    content-style="padding: 0 24px;"
     footer-style="padding: 0 24px 20px 24px;"
     @update:show="(val: boolean) => emit('update:show', val)"
   >
@@ -54,74 +130,264 @@ function resetAndClose() {
       </n-flex>
     </template>
 
-    <n-flex vertical :gap="20" style="margin: 12px 0">
-      <!-- 体重输入 -->
-      <n-flex vertical :gap="8">
-        <n-flex align="center" :gap="6">
-          <n-icon size="18" color="#6b7280">
-            <Scale />
-          </n-icon>
-          <n-text depth="3" style="font-size: 14px; font-weight: 500"
-            >今日空腹体重</n-text
-          >
-        </n-flex>
-        <n-input-number
-          v-model:value="weight"
-          placeholder="请输入今日空腹体重"
-          :min="30"
-          :max="250"
-          :precision="1"
-          :step="0.1"
-          clearable
-          style="width: 100%"
-        >
-          <template #suffix>
-            <n-text depth="3" style="font-size: 13px">kg</n-text>
-          </template>
-        </n-input-number>
-      </n-flex>
+    <n-tabs
+      v-model:value="activeTab"
+      type="line"
+      animated
+      style="margin-top: 8px"
+    >
+      <!-- Tab 1: 打卡 -->
+      <n-tab-pane name="checkIn" tab="每日打卡">
+        <n-flex vertical :gap="20" style="margin: 8px 0">
+          <n-flex vertical :gap="8">
+            <n-flex align="center" :gap="6">
+              <n-icon size="18" color="#6b7280">
+                <Scale />
+              </n-icon>
+              <n-text depth="3" style="font-size: 14px; font-weight: 500"
+                >今日空腹体重</n-text
+              >
+            </n-flex>
+            <n-input-number
+              v-model:value="weight"
+              placeholder="请输入今日空腹体重"
+              :min="30"
+              :max="250"
+              :precision="1"
+              :step="0.1"
+              clearable
+              style="width: 100%"
+            >
+              <template #suffix>
+                <n-text depth="3" style="font-size: 13px">kg</n-text>
+              </template>
+            </n-input-number>
+          </n-flex>
 
-      <!-- 消耗输入 -->
-      <n-flex vertical :gap="8">
-        <n-flex align="center" :gap="6">
-          <n-icon size="18" color="#6b7280">
-            <Flash />
-          </n-icon>
-          <n-text depth="3" style="font-size: 14px; font-weight: 500"
-            >今日总消耗</n-text
-          >
+          <n-flex vertical :gap="8">
+            <n-flex align="center" :gap="6">
+              <n-icon size="18" color="#6b7280">
+                <Flash />
+              </n-icon>
+              <n-text depth="3" style="font-size: 14px; font-weight: 500"
+                >今日总消耗</n-text
+              >
+            </n-flex>
+            <n-input-number
+              v-model:value="kcalConsumed"
+              placeholder="请输入今日总消耗"
+              :min="0"
+              :max="10000"
+              :precision="0"
+              clearable
+              style="width: 100%"
+            >
+              <template #suffix>
+                <n-text depth="3" style="font-size: 13px">kcal</n-text>
+              </template>
+            </n-input-number>
+          </n-flex>
         </n-flex>
-        <n-input-number
-          v-model:value="kcalConsumed"
-          placeholder="请输入今日总消耗"
-          :min="0"
-          :max="10000"
-          :precision="0"
-          clearable
-          style="width: 100%"
-        >
-          <template #suffix>
-            <n-text depth="3" style="font-size: 13px">kcal</n-text>
-          </template>
-        </n-input-number>
-      </n-flex>
-    </n-flex>
+      </n-tab-pane>
+
+      <!-- Tab 2: 个人设置 -->
+      <n-tab-pane name="profile" tab="个人设置">
+        <n-flex vertical :gap="20" style="margin: 8px 0">
+          <!-- 基础信息 -->
+          <n-flex vertical :gap="8">
+            <n-flex align="center" :gap="6">
+              <n-icon size="18" color="#6b7280">
+                <Person />
+              </n-icon>
+              <n-text depth="3" style="font-size: 14px; font-weight: 500"
+                >基础信息</n-text
+              >
+            </n-flex>
+            <n-grid :cols="2" x-gap="12" y-gap="12">
+              <n-gi>
+                <n-input
+                  v-model:value="editName"
+                  placeholder="昵称"
+                  clearable
+                />
+              </n-gi>
+              <n-gi>
+                <n-select
+                  v-model:value="editGender"
+                  :options="[
+                    { label: '男', value: 'male' },
+                    { label: '女', value: 'female' },
+                  ]"
+                />
+              </n-gi>
+              <n-gi>
+                <n-input-number
+                  v-model:value="editAge"
+                  placeholder="年龄"
+                  :min="10"
+                  :max="120"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">岁</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+              <n-gi>
+                <n-input-number
+                  v-model:value="editHeight"
+                  placeholder="身高"
+                  :min="100"
+                  :max="250"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">cm</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+              <n-gi>
+                <n-input-number
+                  v-model:value="editNowWeight"
+                  placeholder="当前体重"
+                  :min="30"
+                  :max="250"
+                  :precision="1"
+                  :step="0.1"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">kg</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+            </n-grid>
+          </n-flex>
+
+          <!-- 目标设置 -->
+          <n-flex vertical :gap="8">
+            <n-flex align="center" :gap="6">
+              <n-icon size="18" color="#6b7280">
+                <NutritionOutline />
+              </n-icon>
+              <n-text depth="3" style="font-size: 14px; font-weight: 500"
+                >目标设置</n-text
+              >
+            </n-flex>
+            <n-grid :cols="2" x-gap="12" y-gap="12">
+              <n-gi>
+                <n-input-number
+                  v-model:value="editTargetWeight"
+                  placeholder="目标体重"
+                  :min="30"
+                  :max="200"
+                  :precision="1"
+                  :step="0.1"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">kg</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+              <n-gi>
+                <n-date-picker
+                  v-model:value="editTargetDate"
+                  type="date"
+                  placeholder="目标日期"
+                  clearable
+                  style="width: 100%"
+                />
+              </n-gi>
+              <n-gi>
+                <n-input-number
+                  v-model:value="editDailyKcal"
+                  placeholder="每日目标热量"
+                  :min="500"
+                  :max="5000"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">kcal</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+              <n-gi>
+                <n-input-number
+                  v-model:value="editProtein"
+                  placeholder="蛋白质目标"
+                  :min="0"
+                  :max="500"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">g</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+              <n-gi>
+                <n-input-number
+                  v-model:value="editCarbs"
+                  placeholder="碳水目标"
+                  :min="0"
+                  :max="800"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">g</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+              <n-gi>
+                <n-input-number
+                  v-model:value="editFat"
+                  placeholder="脂肪目标"
+                  :min="0"
+                  :max="300"
+                  clearable
+                  style="width: 100%"
+                >
+                  <template #suffix>
+                    <n-text depth="3" style="font-size: 13px">g</n-text>
+                  </template>
+                </n-input-number>
+              </n-gi>
+            </n-grid>
+          </n-flex>
+        </n-flex>
+      </n-tab-pane>
+    </n-tabs>
 
     <template #footer>
-      <n-flex justify="end" :gap="12">
+      <n-flex justify="end" :gap="12" style="padding-top: 8px">
         <n-button quaternary size="large" @click="handleCancel">
           取消
         </n-button>
         <n-button
+          v-if="activeTab === 'checkIn'"
           type="primary"
           size="large"
           :disabled="weight === null || kcalConsumed === null"
-          :style="{
-            borderRadius: '6px',
-          }"
-          @click="handleConfirm"
+          :style="{ borderRadius: '6px' }"
+          @click="handleCheckIn"
         >
           确认签到
+        </n-button>
+        <n-button
+          v-if="activeTab === 'profile'"
+          type="primary"
+          size="large"
+          :style="{ borderRadius: '6px' }"
+          @click="handleSaveProfile"
+        >
+          保存设置
         </n-button>
       </n-flex>
     </template>

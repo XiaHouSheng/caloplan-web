@@ -37,11 +37,12 @@ export const useWeightRecordStore = defineStore(
     // 获取一周体重记录
     const weekWeightRecords = computed(() => {
       let records = []
-      for (let i = 1; i <= 7; i++) {
+      for (let i = 0; i < 7; i++) {
         records.push(weightRecords.value.find(
           (record) => record.date === getWeekDay(i),
         ) || null)
       }
+      console.log(records)
       return records
     });
 

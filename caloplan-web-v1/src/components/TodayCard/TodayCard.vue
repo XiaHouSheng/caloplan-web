@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from "vue";
 import TSubExpectDecrease from "./TSubExpectDecrease.vue";
 import TSubContinue from "./TSubContinue.vue";
 import TSubFromTarget from "./TSubFromTarget.vue";
@@ -7,15 +8,22 @@ import TSubGreetingCard from "./TSubGreetingCard.vue";
 import DialogCheckIn from "../Dialog/DialogCheckIn.vue";
 import { Pencil } from "@vicons/ionicons5";
 
-const dialogCheckInVisible = ref(false)
+const dialogCheckInVisible = ref(false);
 
 </script>
 
 <template>
-  <DialogCheckIn :show="dialogCheckInVisible" @update:show="dialogCheckInVisible = $event"/>
+  <DialogCheckIn
+    :show="dialogCheckInVisible"
+    @update:show="dialogCheckInVisible = $event"
+  />
   <n-card style="transform: translate(0)">
     <template #default>
-      <n-float-button :right="20" :bottom="50" @click="dialogCheckInVisible = true;">
+      <n-float-button
+        :right="20"
+        :bottom="50"
+        @click="dialogCheckInVisible = true"
+      >
         <n-icon>
           <Pencil />
         </n-icon>
