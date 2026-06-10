@@ -3,12 +3,16 @@ import { onMounted } from "vue";
 import { LogoGithub, NutritionOutline, Language } from "@vicons/ionicons5";
 import ChatBox from "../components/ChatBox.vue";
 import DashBoard from "../components/DashBoard.vue";
-import { seedMockData } from "../mock/index";
-import { checkInCount } from "../utils/checkIn";
+import { useUserStore } from "../stores/useUserStore";
+import { useWeightRecordStore } from "../stores/useWeightRecord";
+import { useMealStore } from "../stores/useMealStore";
+
+const userStore = useUserStore();
+const weightRecordStore = useWeightRecordStore();
+const mealStore = useMealStore();
 
 onMounted(async () => {
   //await seedMockData();
-  checkInCount();
 });
 </script>
 

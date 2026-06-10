@@ -4,18 +4,18 @@ import { CanvasRenderer } from "echarts/renderers";
 import { PieChart } from "echarts/charts";
 import { TooltipComponent } from "echarts/components";
 import VChart from "vue-echarts";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { EChartsOption } from "echarts";
 import { useUserStore } from "../../stores/useUserStore";
 import { useMealStore } from "../../stores/useMealStore";
 
 const userStore = useUserStore();
 const mealStore = useMealStore();
-const nutritionTarget = userStore.nutritionTarget ?? {};
-const todayNutritionSum = mealStore.todayNutritionSum ?? {};
-const deltaKcal = nutritionTarget.dailyKcal - todayNutritionSum.kcal;
+const nutritionTarget = computed(() => userStore.nutritionTarget ?? {});
+const todayNutritionSum = computed(() => mealStore.todayNutritionSum ?? {});
+const deltaKcal = nutritionTarget.value.dailyKcal - todayNutritionSum.value.kcal;
 const rate = Math.round(
-  (todayNutritionSum.kcal / nutritionTarget.dailyKcal) * 100,
+  (todayNutritionSum.value.kcal / nutritionTarget.value.dailyKcal) * 100,
 );
 
 use([CanvasRenderer, PieChart, TooltipComponent]);
@@ -41,7 +41,7 @@ const option = ref<EChartsOption>({
       label: {
         show: true,
         position: "center",
-        formatter: `{total|${todayNutritionSum.kcal}}\n/${nutritionTarget.dailyKcal}`,
+        formatter: `{total|${todayNutritionSum.value.kcal}}\n/${nutritionTarget.value.dailyKcal}`,
         fontSize: 14,
         lineHeight: 22,
         color: "#6b7280",
@@ -58,9 +58,9 @@ const option = ref<EChartsOption>({
         show: false,
       },
       data: [
-        { value: todayNutritionSum.carbs, name: "碳水" },
-        { value: todayNutritionSum.protein, name: "蛋白质" },
-        { value: todayNutritionSum.fat, name: "脂肪" },
+        { value: todayNutritionSum.value.carbs, name: "碳水" },
+        { value: todayNutritionSum.value.protein, name: "蛋白质" },
+        { value: todayNutritionSum.value.fat, name: "脂肪" },
       ],
     },
   ],

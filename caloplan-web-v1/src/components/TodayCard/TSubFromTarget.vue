@@ -4,8 +4,6 @@ import { useUserStore } from "../../stores/useUserStore";
 import { useWeightRecordStore } from "../../stores/useWeightRecord";
 const weightRecordStore = useWeightRecordStore();
 
-console.log(weightRecordStore.getAllWeightRecords());
-
 const userStore = useUserStore();
 
 const targetWeight = computed(() => userStore.profile?.targetWeight ?? 0);

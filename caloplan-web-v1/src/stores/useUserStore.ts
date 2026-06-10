@@ -33,14 +33,14 @@ export const useUserStore = defineStore(
     });
 
     // 初始化营养目标
-    const nutritionTarget = computed<NutritionTarget>(() => ({
+    const nutritionTarget = ref<NutritionTarget>({
       dailyKcal: autoCalBmr.value ? Math.round(bmr.value) : 2000,
       protein: 100,
       carbs: 200,
       fat: 50,
       id: nanoid(),
       createdAt: new Date().toISOString(),
-    }));
+    });
     // BMI
     const bmi = computed(() => {
       return profile.value.nowWeight / ((profile.value.height / 100) ** 2);

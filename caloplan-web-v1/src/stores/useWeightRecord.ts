@@ -42,7 +42,6 @@ export const useWeightRecordStore = defineStore(
           (record) => record.date === getWeekDay(i),
         ) || null)
       }
-      console.log(records)
       return records
     });
 

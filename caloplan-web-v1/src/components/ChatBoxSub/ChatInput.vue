@@ -1,5 +1,11 @@
 <script setup>
 import { Rainy, Send } from "@vicons/ionicons5";
+import { ref } from "vue";
+
+const name = ref("功能1");
+
+const tabs = ["功能1", "功能2", "功能3", "功能4", "功能5"];
+
 </script>
 
 <template>

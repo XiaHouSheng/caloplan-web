@@ -4,6 +4,7 @@ import { Scale, Flash, Person, NutritionOutline } from "@vicons/ionicons5";
 import { useUserStore } from "../../stores/useUserStore";
 import { useWeightRecordStore } from "../../stores/useWeightRecord";
 import { getTodayDate, convertToDate } from "../../utils/date";
+import { checkInCount } from "../../utils/checkIn";
 
 const userStore = useUserStore();
 const weightRecordStore = useWeightRecordStore();
@@ -61,13 +62,19 @@ watch(
   },
 );
 
+
+
+
 function handleCheckIn() {
-  const latestTime = convertToDate(weightRecordStore.latestWeightRecord.date).getTime();
+  const latestTime = convertToDate(
+    weightRecordStore.latestWeightRecord.date,
+  ).getTime();
   if (weight.value === null || kcalConsumed.value === null) return;
   userStore.updateWeight(weight.value);
-  if (latestTime === convertToDate(getTodayDate()).getTime()){
+  if (!checkInCount()) return;
+  if (latestTime === convertToDate(getTodayDate()).getTime()) {
     weightRecordStore.updateTodayWeight(weight.value);
-  }else{
+  } else {
     weightRecordStore.addWeightRecord({ weight: weight.value });
   }
   weight.value = null;
