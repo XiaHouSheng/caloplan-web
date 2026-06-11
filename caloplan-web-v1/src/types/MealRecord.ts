@@ -13,6 +13,24 @@ interface MealRecord {
   createdAt: string;
 }
 
+interface ExpendRecord {
+  id: string;
+  date: string;
+  kcal: number;
+  createdAt: string;
+}
+
+function createExpendRecord(
+  raw: Omit<ExpendRecord, "id" | "createdAt" | "date">,
+): ExpendRecord {
+  return {
+    id: nanoid(),
+    date: getTodayDate(),
+    kcal: raw.kcal,
+    createdAt: new Date().toISOString(),
+  };
+}
+
 function createMealRecord(
   raw: Omit<MealRecord, "id" | "createdAt" | "date">,
 ): MealRecord {
@@ -26,5 +44,5 @@ function createMealRecord(
   };
 }
 
-export type { MealRecord, MealType };
-export { createMealRecord };
+export type { MealRecord, MealType, ExpendRecord };
+export { createExpendRecord, createMealRecord };

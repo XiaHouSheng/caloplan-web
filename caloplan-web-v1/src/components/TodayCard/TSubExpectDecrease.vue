@@ -4,7 +4,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import { LineChart } from "echarts/charts";
 import { GridComponent, TooltipComponent } from "echarts/components";
 import VChart from "vue-echarts";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { EChartsOption } from "echarts";
 import { useWeightRecordStore } from "../../stores/useWeightRecord";
 
@@ -13,8 +13,8 @@ use([CanvasRenderer, LineChart, GridComponent, TooltipComponent]);
 
 const weightRecordStore = useWeightRecordStore();
 const records = weightRecordStore.weekWeightRecords;
-const weights = records.map((record) => record ? record.weight : null);
-const option = ref<EChartsOption>({
+const weights = computed(() => records.map((record) => record ? record.weight : null));
+const option = computed(() => ({
   grid: {
     left: 0,
     right: 0,
@@ -51,7 +51,7 @@ const option = ref<EChartsOption>({
   series: [
     {
       name: "Trend",
-      data: weights,
+      data: weights.value,
       type: "line",
       connectNulls: false,
       smooth: 0.2,
@@ -82,7 +82,7 @@ const option = ref<EChartsOption>({
     },
   ],
   animationDuration: 700,
-});
+}));
 </script>
 
 <template>

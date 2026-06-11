@@ -20,7 +20,7 @@ const rate = Math.round(
 
 use([CanvasRenderer, PieChart, TooltipComponent]);
 
-const option = ref<EChartsOption>({
+const option = computed(() => ({
   tooltip: {
     trigger: "item",
     formatter: "{b}<br/>{c}g ({d}%)",
@@ -64,7 +64,7 @@ const option = ref<EChartsOption>({
       ],
     },
   ],
-});
+}));
 </script>
 
 <template>

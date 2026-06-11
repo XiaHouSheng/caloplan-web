@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { Scale, Flash, Person, NutritionOutline } from "@vicons/ionicons5";
+import { Scale, Person, NutritionOutline } from "@vicons/ionicons5";
 import { useUserStore } from "../../stores/useUserStore";
 import { useWeightRecordStore } from "../../stores/useWeightRecord";
 import { getTodayDate, convertToDate } from "../../utils/date";
@@ -21,7 +21,18 @@ const activeTab = ref<string>("checkIn");
 
 // Tab 1: 打卡
 const weight = ref<number | null>(null);
-const kcalConsumed = ref<number | null>(null);
+const weightDisplay = ref("");
+const weightInputRef = ref<HTMLInputElement | null>(null);
+
+function focusWeightInput() {
+  weightInputRef.value?.focus();
+}
+
+// 同步 weightDisplay 字符串 → weight 数字
+watch(weightDisplay, (val) => {
+  const parsed = parseFloat(val);
+  weight.value = isNaN(parsed) ? null : parsed;
+});
 
 // Tab 2: 个人设置
 const editName = ref("");
@@ -62,23 +73,21 @@ watch(
   },
 );
 
-
-
-
 function handleCheckIn() {
+  // 校验输入
+  if (weight.value === null) return;
+  if (!checkInCount()) return;
+  userStore.updateWeight(weight.value);
   const latestTime = convertToDate(
     weightRecordStore.latestWeightRecord.date,
   ).getTime();
-  if (weight.value === null || kcalConsumed.value === null) return;
-  userStore.updateWeight(weight.value);
-  if (!checkInCount()) return;
   if (latestTime === convertToDate(getTodayDate()).getTime()) {
     weightRecordStore.updateTodayWeight(weight.value);
   } else {
     weightRecordStore.addWeightRecord({ weight: weight.value });
   }
   weight.value = null;
-  kcalConsumed.value = null;
+  weightDisplay.value = "";
   emit("update:show", false);
 }
 
@@ -110,7 +119,7 @@ function handleSaveProfile() {
 
 function handleCancel() {
   weight.value = null;
-  kcalConsumed.value = null;
+  weightDisplay.value = "";
   emit("update:show", false);
 }
 </script>
@@ -145,56 +154,26 @@ function handleCancel() {
     >
       <!-- Tab 1: 打卡 -->
       <n-tab-pane name="checkIn" tab="每日打卡">
-        <n-flex vertical :gap="20" style="margin: 8px 0">
-          <n-flex vertical :gap="8">
-            <n-flex align="center" :gap="6">
-              <n-icon size="18" color="#6b7280">
-                <Scale />
-              </n-icon>
-              <n-text depth="3" style="font-size: 14px; font-weight: 500"
-                >今日空腹体重</n-text
-              >
-            </n-flex>
-            <n-input-number
-              v-model:value="weight"
-              placeholder="请输入今日空腹体重"
-              :min="30"
-              :max="250"
-              :precision="1"
-              :step="0.1"
-              clearable
-              style="width: 100%"
-            >
-              <template #suffix>
-                <n-text depth="3" style="font-size: 13px">kg</n-text>
-              </template>
-            </n-input-number>
-          </n-flex>
-
-          <n-flex vertical :gap="8">
-            <n-flex align="center" :gap="6">
-              <n-icon size="18" color="#6b7280">
-                <Flash />
-              </n-icon>
-              <n-text depth="3" style="font-size: 14px; font-weight: 500"
-                >今日总消耗</n-text
-              >
-            </n-flex>
-            <n-input-number
-              v-model:value="kcalConsumed"
-              placeholder="请输入今日总消耗"
-              :min="0"
-              :max="10000"
-              :precision="0"
-              clearable
-              style="width: 100%"
-            >
-              <template #suffix>
-                <n-text depth="3" style="font-size: 13px">kcal</n-text>
-              </template>
-            </n-input-number>
-          </n-flex>
-        </n-flex>
+        <div class="checkin-body">
+          <div class="weight-display">
+            <div class="weight-value">
+              <input
+                ref="weightInputRef"
+                v-model="weightDisplay"
+                class="weight-input-hidden"
+                type="number"
+                step="0.1"
+                min="30"
+                max="250"
+                @focus="(e: FocusEvent) => (e.target as HTMLInputElement)?.select()"
+              />
+              <span v-if="!weight" class="weight-placeholder" @click="focusWeightInput">00.0</span>
+              <span v-else class="weight-number" @click="focusWeightInput">{{ weightDisplay }}</span>
+              <span class="weight-unit">kg</span>
+            </div>
+            <div class="weight-label">今日空腹体重</div>
+          </div>
+        </div>
       </n-tab-pane>
 
       <!-- Tab 2: 个人设置 -->
@@ -381,7 +360,7 @@ function handleCancel() {
           v-if="activeTab === 'checkIn'"
           type="primary"
           size="large"
-          :disabled="weight === null || kcalConsumed === null"
+          :disabled="weight === null"
           :style="{ borderRadius: '6px' }"
           @click="handleCheckIn"
         >
@@ -400,3 +379,66 @@ function handleCancel() {
     </template>
   </n-modal>
 </template>
+
+<style scoped>
+.checkin-body {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0 24px;
+}
+
+.weight-display {
+  text-align: center;
+  user-select: none;
+}
+
+.weight-value {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+}
+
+.weight-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.weight-placeholder {
+  font-size: 72px;
+  font-weight: 300;
+  color: #d0d5dd;
+  letter-spacing: 2px;
+  cursor: text;
+  line-height: 1;
+}
+
+.weight-number {
+  font-size: 72px;
+  font-weight: 700;
+  color: #1a1a2e;
+  letter-spacing: 2px;
+  cursor: text;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.weight-unit {
+  font-size: 28px;
+  font-weight: 500;
+  color: #9ca3af;
+  line-height: 1;
+  padding-bottom: 4px;
+}
+
+.weight-label {
+  margin-top: 12px;
+  font-size: 15px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+</style>

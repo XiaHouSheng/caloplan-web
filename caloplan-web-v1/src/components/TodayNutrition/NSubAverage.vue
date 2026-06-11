@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import DialogUpdateExpand from "../Dialog/DialogUpdateExpand.vue";
+import { ref, computed } from "vue";
 import VChart from "vue-echarts";
 import type { EChartsOption } from "echarts";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { useMealStore } from "../../stores/useMealStore";
-import { useWeightRecordStore } from "../../stores/useWeightRecord";
 import { LineChart } from "echarts/charts";
+import { CreateOutline } from "@vicons/ionicons5";
 import {
   GridComponent,
   TooltipComponent,
@@ -20,9 +21,39 @@ use([
   TooltipComponent,
   LegendComponent,
 ]);
-const mealStore = useMealStore()
+const mealStore = useMealStore();
 
-const option = ref<EChartsOption>({
+const dataIn = computed(() => {
+  const base = mealStore.day7ExpendData.ylabel;
+  return [
+    ...base,
+    {
+      value: 900,
+      itemStyle: {
+        color: "#fff",
+        borderColor: "#F37F24",
+        borderWidth: 2,
+      },
+    },
+  ];
+});
+
+const dataOut = computed(() => {
+  const base = mealStore.day7KcalData.ylabel;
+  return [
+    ...base,
+    {
+      value: 420,
+      itemStyle: {
+        color: "#fff",
+        borderColor: "#14B89B",
+        borderWidth: 2,
+      },
+    },
+  ];
+});
+
+const option = computed(() => ({
   tooltip: {
     trigger: "axis",
     formatter: (params: any) => {
@@ -81,17 +112,7 @@ const option = ref<EChartsOption>({
       symbolSize: 8,
       itemStyle: { color: "#F37F24" },
       lineStyle: { color: "#F37F24", width: 2 },
-      data: [
-        ...mealStore.day7KcalData.ylabel,
-        {
-          value: 900,
-          itemStyle: {
-            color: "#fff",
-            borderColor: "#F37F24",
-            borderWidth: 2,
-          },
-        },
-      ],
+      data: dataIn.value,
     },
     {
       name: "消耗",
@@ -100,33 +121,30 @@ const option = ref<EChartsOption>({
       symbolSize: 8,
       itemStyle: { color: "#14B89B" },
       lineStyle: { color: "#14B89B", width: 2 },
-      data: [
-        520,
-        580,
-        620,
-        480,
-        400,
-        520,
-        {
-          value: 420,
-          itemStyle: {
-            color: "#fff",
-            borderColor: "#14B89B",
-            borderWidth: 2,
-          },
-        },
-      ],
+      data: dataOut.value,
     },
   ],
-});
+}));
+
+const visibleEditDialog = ref(false);
 </script>
 
 <template>
+  <DialogUpdateExpand
+    :show="visibleEditDialog"
+    @update:show="visibleEditDialog = $event"
+  />
   <n-card
     :segmented="{
       content: true,
     }"
   >
+    <template #header-extra>
+      <n-button size="small" @click="visibleEditDialog = true">
+        更新消耗
+        <n-icon><CreateOutline /></n-icon>
+      </n-button>
+    </template>
     <template #header>
       <n-text style="font-weight: bold">本周趋势</n-text>
     </template>
@@ -137,7 +155,9 @@ const option = ref<EChartsOption>({
             <n-flex vertical :size="0">
               <span>平均摄入</span>
               <n-flex :size="4" align="center" inline>
-                <n-text style="font-size: 18px; font-weight: bold">1200</n-text>
+                <n-text style="font-size: 18px; font-weight: bold">
+                  {{ mealStore.day7KcalData.average.toFixed(0) }}
+                </n-text>
                 <span>kcal/天</span>
               </n-flex>
             </n-flex>
@@ -146,7 +166,9 @@ const option = ref<EChartsOption>({
             <n-flex vertical :size="0">
               <span>平均消耗</span>
               <n-flex :size="4" align="center" inline>
-                <n-text style="font-size: 18px; font-weight: bold">420</n-text>
+                <n-text style="font-size: 18px; font-weight: bold">
+                  {{ mealStore.day7ExpendData.average.toFixed(0) }}
+                </n-text>
                 <span>kcal/天</span>
               </n-flex>
             </n-flex>

@@ -9,8 +9,9 @@ const todayWeightRecord = computed(
 const yesterdayWeightRecord =
   weightRecordStore.yesterdayWeightRecord?.weight ?? 0;
 const deltaWeight = computed(() =>
-  (todayWeightRecord.value - yesterdayWeightRecord).toFixed(1),
+  (todayWeightRecord.value - yesterdayWeightRecord),
 );
+console.log(deltaWeight.value);
 </script>
 
 <template>
@@ -39,9 +40,12 @@ const deltaWeight = computed(() =>
     <!--水平方向-foot-->
     <n-flex align="center" :size="4">
       <span>较昨日</span>
-      <n-text type="primary">{{ deltaWeight }}kg</n-text>
-      <n-icon color="#18a058" :size="18">
-        <ArrowDown />
+      <n-text :type=" deltaWeight > 0 ? 'warning' : 'primary'" style="font-size: 16px; font-weight: bold">{{ deltaWeight.toFixed(1) }}kg</n-text>
+      <n-icon  v-if="deltaWeight < 0" color="#18a058" :size="18">
+        <ArrowDown/>
+      </n-icon>
+      <n-icon  v-else color="#f0a020" :size="18">
+        <ArrowUp/>
       </n-icon>
     </n-flex>
   </n-flex>

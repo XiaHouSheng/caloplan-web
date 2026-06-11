@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { FastFood, Add, TrashOutline, Cafe, Sunny, Moon, Pizza, TimeOutline, Camera } from "@vicons/ionicons5";
+import { FastFood, Add, TrashOutline, Cafe, Sunny, Moon, Pizza, TimeOutline, Camera, Sparkles } from "@vicons/ionicons5";
 import { useMealStore } from "../../stores/useMealStore";
 import type { MealType } from "../../types/MealRecord";
 import type { MealEntry } from "../../types/MealEntry";
@@ -254,13 +254,21 @@ function handleCancel() {
                 </template>
               </n-input-number>
             </n-flex>
-            <!-- AI 识别 + 拍照上传 -->
-            <n-button type="info" strong dashed disabled>
-              <template #icon>
-                <n-icon :component="Camera" />
-              </template>
-              AI 拍照识别
-            </n-button>
+            <!-- AI 功能 -->
+            <n-flex :size="8">
+              <n-button strong dashed disabled style="flex: 1">
+                <template #icon>
+                  <n-icon :component="Camera" />
+                </template>
+                拍照识别
+              </n-button>
+              <n-button strong dashed disabled style="flex: 1">
+                <template #icon>
+                  <n-icon :component="Sparkles" />
+                </template>
+                根据名称自动生成
+              </n-button>
+            </n-flex>
           </n-flex>
 
           <!-- 已添加食物 -->
