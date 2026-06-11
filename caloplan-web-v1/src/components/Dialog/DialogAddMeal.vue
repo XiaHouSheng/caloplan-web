@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { FastFood, Add, TrashOutline, Cafe, Sunny, Moon, Pizza, TimeOutline, Camera, Sparkles } from "@vicons/ionicons5";
 import { useMealStore } from "../../stores/useMealStore";
 import type { MealType } from "../../types/MealRecord";
@@ -9,6 +9,8 @@ const mealStore = useMealStore();
 
 const props = defineProps<{
   show: boolean;
+  presetEntries?: Omit<MealEntry, "id" | "createdAt">[];
+  presetMealType?: MealType;
 }>();
 
 const emit = defineEmits<{
@@ -46,6 +48,25 @@ interface TempFood {
 
 let nextId = 1;
 const tempFoods = ref<TempFood[]>([]);
+
+// 预填数据：对话框打开时如有 presetEntries 则填入
+watch(
+  () => props.show,
+  (val) => {
+    if (val && props.presetEntries && props.presetEntries.length > 0) {
+      tempFoods.value = props.presetEntries.map((entry) => ({
+        id: nextId++,
+        name: entry.name,
+        amount: entry.amount,
+        kcal: entry.kcal,
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fat: entry.fat,
+      }));
+      selectedMealType.value = props.presetMealType || "breakfast";
+    }
+  },
+);
 
 // 历史食物去重
 const historyFoods = computed(() => {
@@ -91,6 +112,13 @@ function addHistoryFood(name: string, kcal: number, protein?: number, carbs?: nu
 
 function removeFood(id: number) {
   tempFoods.value = tempFoods.value.filter((f) => f.id !== id);
+}
+
+function removeHistoryFood(name: string) {
+  const entry = mealStore.mealEntries.find((e) => e.name === name);
+  if (entry) {
+    mealStore.dropTargetEntry(entry.id);
+  }
 }
 
 function handleSave() {
@@ -365,10 +393,21 @@ function handleCancel() {
                     <n-text v-if="food.fat" depth="3" style="font-size: 11px">脂肪{{ food.fat }}g</n-text>
                   </n-flex>
                 </n-flex>
-                <n-text type="primary" style="font-size: 14px; font-weight: 600">{{
+                <n-text type="primary" style="font-size: 14px; font-weight: 600; margin-right: 4px">{{
                   food.kcal
                 }}</n-text>
-                <n-text depth="3" style="font-size: 12px">kcal</n-text>
+                <n-text depth="3" style="font-size: 12px; margin-right: 8px">kcal</n-text>
+                <n-button
+                  quaternary
+                  circle
+                  size="tiny"
+                  type="error"
+                  @click.stop="removeHistoryFood(food.name)"
+                >
+                  <template #icon>
+                    <n-icon :component="TrashOutline" />
+                  </template>
+                </n-button>
               </n-flex>
             </n-list-item>
           </n-list>

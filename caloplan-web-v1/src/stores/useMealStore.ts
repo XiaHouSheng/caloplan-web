@@ -14,7 +14,7 @@ export const useMealStore = defineStore(
     const mealRecords = ref<MealRecord[]>([]);
     const mealEntries = ref<MealEntry[]>([]);
     const expendRecords = ref<ExpendRecord[]>([]);
-
+    
     const todayMealRecords = computed(() => {
       return mealRecords.value.filter(
         (record) => record.date === formatDate(new Date()),
