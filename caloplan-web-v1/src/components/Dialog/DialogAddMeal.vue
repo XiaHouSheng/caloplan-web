@@ -54,6 +54,7 @@ watch(
   () => props.show,
   (val) => {
     if (val && props.presetEntries && props.presetEntries.length > 0) {
+      console.log(props.presetEntries[0])
       tempFoods.value = props.presetEntries.map((entry) => ({
         id: nextId++,
         name: entry.name,

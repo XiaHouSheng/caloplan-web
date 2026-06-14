@@ -21,6 +21,10 @@ export const useWeightRecordStore = defineStore(
     const latestWeightRecord = computed(() => {
       return weightRecords.value[weightRecords.value.length - 1];
     });
+    // 获取上次的体重记录
+    const lastWeightRecord = computed(() => {
+      return weightRecords.value[weightRecords.value.length - 2];
+    });
     // 获取今日体重记录
     const todayWeightRecord = computed(() => {
       return weightRecords.value.find(
@@ -88,6 +92,7 @@ export const useWeightRecordStore = defineStore(
       todayWeightRecord,
       yesterdayWeightRecord,
       latestWeightRecord,
+      lastWeightRecord,
       weekWeightRecords,
       updateTodayWeight,
       addWeightRecord,

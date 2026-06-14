@@ -6,12 +6,12 @@ const weightRecordStore = useWeightRecordStore();
 const todayWeightRecord = computed(
   () => weightRecordStore.todayWeightRecord?.weight ?? 0,
 );
-const yesterdayWeightRecord =
-  weightRecordStore.yesterdayWeightRecord?.weight ?? 0;
-const deltaWeight = computed(() =>
-  (todayWeightRecord.value - yesterdayWeightRecord),
+const lastWeightRecord = computed(
+  () => weightRecordStore.lastWeightRecord?.weight ?? 0,
 );
-console.log(deltaWeight.value);
+const deltaWeight = computed(
+  () => todayWeightRecord.value - lastWeightRecord.value,
+);
 </script>
 
 <template>
@@ -40,13 +40,20 @@ console.log(deltaWeight.value);
     <!--水平方向-foot-->
     <n-flex align="center" :size="4">
       <span>较昨日</span>
-      <n-text :type=" deltaWeight > 0 ? 'warning' : 'primary'" style="font-size: 16px; font-weight: bold">{{ deltaWeight.toFixed(1) }}kg</n-text>
-      <n-icon  v-if="deltaWeight < 0" color="#18a058" :size="18">
-        <ArrowDown/>
-      </n-icon>
-      <n-icon  v-else color="#f0a020" :size="18">
-        <ArrowUp/>
-      </n-icon>
+      <span v-if="todayWeightRecord == 0">未记录</span>
+      <template v-else>
+        <n-text
+          :type="deltaWeight > 0 ? 'warning' : 'primary'"
+          style="font-size: 16px; font-weight: bold"
+          >{{ deltaWeight.toFixed(1) }}kg</n-text
+        >
+        <n-icon v-if="deltaWeight < 0" color="#18a058" :size="18">
+          <ArrowDown />
+        </n-icon>
+        <n-icon v-else color="#f0a020" :size="18">
+          <ArrowUp />
+        </n-icon>
+      </template>
     </n-flex>
   </n-flex>
 </template>

@@ -1,17 +1,21 @@
 <script setup>
-import { Rainy, Send } from "@vicons/ionicons5";
+import { Alert, Rainy, Send } from "@vicons/ionicons5";
 import { ref } from "vue";
-
-const name = ref("功能1");
-
-const tabs = ["功能1", "功能2", "功能3", "功能4", "功能5"];
+import { useChatStore } from "../../stores/useChatStore";
+import { createChatMessage } from "../../types/ChatMessage";
+import sendMessage from "../../applications/service/ChatBoxService"
+const chatStore = useChatStore();
 
 </script>
 
 <template>
   <n-flex vertical style="transform: translate(0)">
-    <n-tabs v-model:value="name" type="card">
-      <n-tab-pane v-for="i in 5" style="padding: 0" :name="`功能${i}`"></n-tab-pane>
+    <n-tabs v-model:value="chatStore.chatAppSelect" type="card">
+      <n-tab-pane
+        v-for="i in chatStore.apps"
+        style="padding: 0"
+        :name="`${i}`"
+      ></n-tab-pane>
     </n-tabs>
     <n-input
       style="border-radius: 20px; padding: 12px"
@@ -19,11 +23,12 @@ const tabs = ["功能1", "功能2", "功能3", "功能4", "功能5"];
         minRows: 1,
         maxRows: 1,
       }"
+      v-model:value="chatStore.inputMessage"
       type="textarea"
       size="small"
       placeholder="测试placeholder"
     />
-    <n-float-button :right="8" :bottom="8">
+    <n-float-button @click="sendMessage" :right="8" :bottom="8">
       <n-icon size="24">
         <Send />
       </n-icon>

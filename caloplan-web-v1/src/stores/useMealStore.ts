@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { formatDate, getWeekDay } from "../utils/date";
+import { formatDate, getWeekDay, getTimeStr } from "../utils/date";
+import { type MealType } from "../types/MealRecord";
 import { type MealEntry, createMealEntry } from "../types/MealEntry";
 import {
   type MealRecord,
@@ -14,7 +15,7 @@ export const useMealStore = defineStore(
     const mealRecords = ref<MealRecord[]>([]);
     const mealEntries = ref<MealEntry[]>([]);
     const expendRecords = ref<ExpendRecord[]>([]);
-    
+
     const todayMealRecords = computed(() => {
       return mealRecords.value.filter(
         (record) => record.date === formatDate(new Date()),
@@ -37,7 +38,6 @@ export const useMealStore = defineStore(
           ylabel.push(null);
         }
       }
-      console.log("day7ExpendData", expendRecords.value);
       return {
         average: totalKcal / effectiveDay,
         sum: totalKcal,
@@ -135,6 +135,34 @@ export const useMealStore = defineStore(
       );
     }
 
+    function onAddMeal(data: {
+      mealType: MealType;
+      time: string;
+      entries: {
+        name: string;
+        amount: string;
+        kcal: number;
+        protein?: number;
+        carbs?: number;
+        fat?: number;
+      }[];
+    }) {
+      const { mealType, time, entries } = data;
+      let date = formatDate(new Date(time));
+      let time_ = getTimeStr(new Date(time));
+      let entriesDuplicate = [];
+      for (const entry of entries) {
+        let entryObj = addEntry(entry);
+        entriesDuplicate.push(entryObj);
+      }
+      addRecord({
+        mealType: mealType,
+        date: date,
+        time: time_,
+        entries: entriesDuplicate,
+      });
+    }
+
     return {
       mealRecords,
       mealEntries,
@@ -143,6 +171,7 @@ export const useMealStore = defineStore(
       day7KcalData,
       day7ExpendData,
       todayNutritionSum,
+      onAddMeal,
       addEntry,
       addRecord,
       dropTargetRecord,

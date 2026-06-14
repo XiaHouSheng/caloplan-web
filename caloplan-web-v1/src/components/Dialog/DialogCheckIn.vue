@@ -76,8 +76,6 @@ watch(
 function handleCheckIn() {
   // 校验输入
   if (weight.value === null) return;
-  if (!checkInCount()) return;
-  userStore.updateWeight(weight.value);
   const latestTime = convertToDate(
     weightRecordStore.latestWeightRecord.date,
   ).getTime();
@@ -86,6 +84,7 @@ function handleCheckIn() {
   } else {
     weightRecordStore.addWeightRecord({ weight: weight.value });
   }
+  checkInCount();
   weight.value = null;
   weightDisplay.value = "";
   emit("update:show", false);
@@ -165,10 +164,19 @@ function handleCancel() {
                 step="0.1"
                 min="30"
                 max="250"
-                @focus="(e: FocusEvent) => (e.target as HTMLInputElement)?.select()"
+                @focus="
+                  (e: FocusEvent) => (e.target as HTMLInputElement)?.select()
+                "
               />
-              <span v-if="!weight" class="weight-placeholder" @click="focusWeightInput">00.0</span>
-              <span v-else class="weight-number" @click="focusWeightInput">{{ weightDisplay }}</span>
+              <span
+                v-if="!weight"
+                class="weight-placeholder"
+                @click="focusWeightInput"
+                >00.0</span
+              >
+              <span v-else class="weight-number" @click="focusWeightInput">{{
+                weightDisplay
+              }}</span>
               <span class="weight-unit">kg</span>
             </div>
             <div class="weight-label">今日空腹体重</div>

@@ -6,13 +6,16 @@ import DashBoard from "../components/DashBoard.vue";
 import { useUserStore } from "../stores/useUserStore";
 import { useWeightRecordStore } from "../stores/useWeightRecord";
 import { useMealStore } from "../stores/useMealStore";
+import { useChatStore } from "../stores/useChatStore";
 
 const userStore = useUserStore();
 const weightRecordStore = useWeightRecordStore();
 const mealStore = useMealStore();
+const chatStore = useChatStore();
+
 
 onMounted(async () => {
-  //await seedMockData();
+  
 });
 </script>
 

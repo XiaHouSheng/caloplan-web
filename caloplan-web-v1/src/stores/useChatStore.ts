@@ -7,12 +7,27 @@ export const useChatStore = defineStore(
   () => {
     const messages = ref<ChatMessage[]>([]);
 
+    const chatAppSelect = ref("功能1");
+    const inputMessage = ref("");
+    const apps = ["功能1", "功能2", "功能3", "功能4", "功能5"];
+
     const lastMessage = computed(() => {
       return messages.value[messages.value.length - 1] ?? null;
     });
 
     function addMessage(raw: Omit<ChatMessage, "id" | "timestamp">) {
-      messages.value.push(createChatMessage(raw));
+      const message = createChatMessage(raw);
+      messages.value.push(message);
+      return message
+    }
+
+    function updateMessage(message: ChatMessage) {
+      messages.value = messages.value.map((m) => {
+        if (m.id === message.id) {
+          return message;
+        }
+        return m;
+      });
     }
 
     function deleteMessage(id: string) {
@@ -26,9 +41,13 @@ export const useChatStore = defineStore(
     return {
       messages,
       lastMessage,
+      chatAppSelect,
+      inputMessage,
+      apps,
       addMessage,
       deleteMessage,
       clearMessages,
+      updateMessage,
     };
   },
   {

@@ -35,37 +35,6 @@ function onDialogUpdateShow(val: boolean) {
 
 defineExpose({ openWithEntries });
 
-function onAddMeal(data: {
-  mealType: MealType;
-  time: string;
-  entries: {
-    name: string;
-    amount: string;
-    kcal: number;
-    protein?: number;
-    carbs?: number;
-    fat?: number;
-  }[];
-}) {
-  const { mealType, time, entries } = data;
-  let date = formatDate(new Date(time));
-  let time_ = getTimeStr(new Date(time));
-  let entriesDuplicate = [];
-  for (const entry of entries) {
-    let entryObj = mealStore.addEntry(entry);
-    entriesDuplicate.push(entryObj);
-  }
-  mealStore.addRecord({
-    mealType: mealType,
-    date: date,
-    time: time_,
-    entries: entriesDuplicate,
-  });
-}
-
-function onDeleteMeal(id: string) {
-  mealStore.dropTargetRecord(id);
-}
 </script>
 
 <template>
@@ -73,7 +42,7 @@ function onDeleteMeal(id: string) {
     :show="dialogAddMealVisible"
     :preset-entries="presetEntries"
     :preset-meal-type="presetMealType"
-    @addMeal="onAddMeal"
+    @addMeal="mealStore.onAddMeal"
     @update:show="onDialogUpdateShow"
   />
   <n-card>
@@ -99,7 +68,7 @@ function onDeleteMeal(id: string) {
           v-for="item in mealStore.todayMealRecords"
           :key="item.id"
           :item="item"
-          @delete="onDeleteMeal"
+          @delete="mealStore.dropTargetRecord(item.id)"
         />
       </n-list>
     </template>

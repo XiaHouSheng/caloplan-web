@@ -6,12 +6,15 @@ import { getTodayDate, getYesterdayDate, convertToDate } from "./date";
 const checkInCount = () => {
   const userStore = useUserStore();
   const weightRecordStore = useWeightRecordStore();
+
   const lastWeightRecordDate = convertToDate(
-    weightRecordStore.latestWeightRecord?.date || getYesterdayDate(),
+    weightRecordStore.lastWeightRecord?.date || getYesterdayDate(),
   ).getTime();
+
   const todayDate = convertToDate(getTodayDate()).getTime();
   const yesterdayDate = convertToDate(getYesterdayDate()).getTime();
   let checkInCount = userStore.profile.checkInCount || 0;
+
   // 上次打卡日期 == 昨天 -> 打卡次数加1
   if (lastWeightRecordDate === yesterdayDate) {
     checkInCount++;
