@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { useDialogStore } from "../../stores/useDialogStore";
 import type { MealEntry } from "../../types/MealEntry";
+
+const dialogStore = useDialogStore();
 
 const props = defineProps<{
   item: Omit<MealEntry, "id" | "createdAt">;
 }>();
 
-const emit = defineEmits<{
-  (e: "add", item: Omit<MealEntry, "id" | "createdAt">): void;
-}>();
+function addMealRecord() {
+  dialogStore.dialogAddMealVisible = true;
+  dialogStore.presetEntries = [props.item];
+}
+
 </script>
 
 <template>
@@ -36,7 +41,7 @@ const emit = defineEmits<{
         </n-flex>
         <n-flex align="center">
           <n-text style="font-size: 12px">{{ item.amount }}{{ item.name }}</n-text>
-          <n-button style="margin-left: auto" size="small" @click="emit('add', item)">添加</n-button>
+          <n-button style="margin-left: auto" size="small" @click="addMealRecord">添加</n-button>
         </n-flex>
       </n-flex>
     </n-flex>

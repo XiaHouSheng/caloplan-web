@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from "vue";
 import { markdown } from "../../utils/markdown";
+import { useDialogStore } from "../../stores/useDialogStore";
+
 const props = defineProps({
   rawMessage: {
     type: String,
@@ -27,14 +29,15 @@ const props = defineProps({
     default: "功能1",
   },
 });
-const emit = defineEmits(["addToMeal"]);
 const renderMessage = computed(() => markdown.render(props.rawMessage));
+const dialogStore = useDialogStore();
 
 function handleAddToMeal() {
   const mealRecord = props.additionalInfo?.meal_record;
   if (!mealRecord) return;
-  // 兼容单条对象和多条数组
-  emit("addToMeal", { mealRecord: mealRecord, application: props.application });
+  dialogStore.dialogAddMealVisible = true;
+  dialogStore.presetEntries = mealRecord.entries;
+  dialogStore.presetMealType = mealRecord.meal_type || 0;
 }
 </script>
 

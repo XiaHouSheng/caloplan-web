@@ -15,13 +15,6 @@ const mockItems = ref<MockItem[]>([
   { name: "蔬菜鸡蛋羹", amount: "1碗", kcal: 160, protein: 12, carbs: 6, fat: 10 },
 ]);
 
-const emit = defineEmits<{
-  (e: "add", entries: MockItem[], mealType?: MealType): void;
-}>();
-
-function handleAdd(item: MockItem) {
-  emit("add", [item]);
-}
 </script>
 
 <template>
@@ -41,7 +34,6 @@ function handleAdd(item: MockItem) {
           v-for="item in mockItems"
           :key="item.name"
           :item="item"
-          @add="handleAdd"
         />
       </n-list>
     </template>

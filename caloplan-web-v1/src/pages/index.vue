@@ -7,19 +7,25 @@ import { useUserStore } from "../stores/useUserStore";
 import { useWeightRecordStore } from "../stores/useWeightRecord";
 import { useMealStore } from "../stores/useMealStore";
 import { useChatStore } from "../stores/useChatStore";
+import { useDialogStore } from "../stores/useDialogStore";
 
 const userStore = useUserStore();
 const weightRecordStore = useWeightRecordStore();
-const mealStore = useMealStore();
 const chatStore = useChatStore();
+const mealStore = useMealStore();
+const dialogStore = useDialogStore();
 
-
-onMounted(async () => {
-  
-});
+onMounted(async () => {});
 </script>
 
 <template>
+  <DialogAddMeal
+    :show="dialogStore.dialogAddMealVisible"
+    :preset-entries="dialogStore.presetEntries"
+    :preset-meal-type="dialogStore.presetMealType"
+    @addMeal="mealStore.onAddMeal"
+    @update:show="dialogStore.onDialogUpdateShow"
+  />
   <n-layout style="min-height: 100vh">
     <n-layout-header
       bordered

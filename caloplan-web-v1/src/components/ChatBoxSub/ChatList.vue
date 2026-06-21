@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
 import ChatListItem from "./ChatListItem.vue";
 import { useChatStore } from "../../stores/useChatStore";
 import { formatDate } from "../../utils/date";
+
 const chatStore = useChatStore();
 
-const emit = defineEmits<{
-  (e: "addToMeal", data: { mealRecord: any; application: string }): void;
-}>();
-
-const scrollContainer = ref<HTMLElement | null>(null)
-onMounted(() => {
-});
 </script>
 
 <template>
@@ -25,7 +18,6 @@ onMounted(() => {
       :time="formatDate(new Date(item.timestamp))"
       :additionalInfo="item.additionalInfo"
       :application="item.application"
-      @addToMeal="(data: any) => emit('addToMeal', data)"
     />
   </n-list>
 </template>

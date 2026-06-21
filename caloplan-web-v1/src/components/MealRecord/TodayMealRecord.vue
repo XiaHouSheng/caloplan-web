@@ -1,53 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import MealRecordItem from "./MealRecordItem.vue";
 import { Add } from "@vicons/ionicons5";
 import { useMealStore } from "../../stores/useMealStore.ts";
-import type { MealType } from "../../types/MealRecord.ts";
-import type { MealEntry } from "../../types/MealEntry";
-import DialogAddMeal from "../Dialog/DialogAddMeal.vue";
-import { formatDate, getTimeStr } from "../../utils/date.ts";
+import { useDialogStore } from "../../stores/useDialogStore";
 
 const mealStore = useMealStore();
-
-// 对话框控制
-const dialogAddMealVisible = ref(false);
-const presetEntries = ref<Omit<MealEntry, "id" | "createdAt">[] | undefined>();
-const presetMealType = ref<MealType>();
-
-function openWithEntries(
-  entries: Omit<MealEntry, "id" | "createdAt">[],
-  mealType?: MealType,
-) {
-  presetEntries.value = entries;
-  presetMealType.value = mealType;
-  dialogAddMealVisible.value = true;
-}
-
-function onDialogUpdateShow(val: boolean) {
-  dialogAddMealVisible.value = val;
-  if (!val) {
-    // 关闭后清除预填
-    presetEntries.value = undefined;
-    presetMealType.value = undefined;
-  }
-}
-
-defineExpose({ openWithEntries });
+const dialogStore = useDialogStore();
 
 </script>
 
 <template>
-  <DialogAddMeal
-    :show="dialogAddMealVisible"
-    :preset-entries="presetEntries"
-    :preset-meal-type="presetMealType"
-    @addMeal="mealStore.onAddMeal"
-    @update:show="onDialogUpdateShow"
-  />
   <n-card>
     <template #header-extra>
-      <n-button size="small" @click="dialogAddMealVisible = true">
+      <n-button size="small" @click="dialogStore.dialogAddMealVisible = true">
         添加餐食
         <n-icon :component="Add" />
       </n-button>
