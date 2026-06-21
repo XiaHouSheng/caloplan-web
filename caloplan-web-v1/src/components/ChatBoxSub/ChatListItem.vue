@@ -45,7 +45,7 @@ function handleAddToMeal() {
   <n-list-item>
     <template #default>
       <n-flex :justify="isUser ? 'end' : 'start'">
-        <n-flex vertical style="max-width: 500px">
+        <n-flex vertical :style="isUser ? 'max-width: 500px' : 'max-width: 100%'">
           <template v-if="isLoading && !isUser">
             <n-flex
               vertical
@@ -71,7 +71,7 @@ function handleAddToMeal() {
                 border: solid 1px #ccc;
               "
             >
-              <div v-html="renderMessage"></div>
+              <div class="markdown-body" v-html="renderMessage"></div>
               <n-flex inline align="center" :justify="isUser ? 'end' : 'start'">
                 <n-text>{{ time }}</n-text>
               </n-flex>

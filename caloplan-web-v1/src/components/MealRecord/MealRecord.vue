@@ -7,7 +7,7 @@ import AiRecommend from "./AiRecommend.vue";
 <template>
   <n-grid x-gap="12" :cols="2">
     <n-gi>
-      <TodayMealRecord ref="todayMealRecordRef" />
+      <TodayMealRecord/>
     </n-gi>
     <n-gi>
       <AiRecommend />
