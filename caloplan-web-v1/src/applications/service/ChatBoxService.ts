@@ -33,6 +33,7 @@ function sendMessage() {
   // 请求Agent回复
   chatSendMsg(
     chatStore.inputMessage,
+    chatStore.chatAppSelect,
     userStore.profile,
     userStore.nutritionTarget,
     mealStore.todayMealRecords,

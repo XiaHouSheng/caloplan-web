@@ -6,6 +6,7 @@ import type { MealEntry } from "../../types/MealEntry"
 
 async function chatSendMsg(
     input: string,
+    application: string,
     body_data: UserProfile,
     nutrition_target: NutritionTarget,
     meal_record: MealRecord[],
@@ -13,6 +14,7 @@ async function chatSendMsg(
 ){
     const params = {
         input: input,
+        application: application,
         body_data: body_data,
         nutrition_target: nutrition_target,
         meal_record: meal_record,

@@ -45,7 +45,10 @@ function handleAddToMeal() {
   <n-list-item>
     <template #default>
       <n-flex :justify="isUser ? 'end' : 'start'">
-        <n-flex vertical :style="isUser ? 'max-width: 500px' : 'max-width: 100%'">
+        <n-flex
+          vertical
+          :style="isUser ? 'max-width: 500px' : 'max-width: 100%'"
+        >
           <template v-if="isLoading && !isUser">
             <n-flex
               vertical
@@ -65,11 +68,7 @@ function handleAddToMeal() {
             <n-flex
               vertical
               wrap
-              style="
-                padding: 12px;
-                border-radius: 20px;
-                border: solid 1px #ccc;
-              "
+              style="padding: 12px; border-radius: 20px; border: solid 1px #ccc"
             >
               <div class="markdown-body" v-html="renderMessage"></div>
               <n-flex inline align="center" :justify="isUser ? 'end' : 'start'">
@@ -79,7 +78,13 @@ function handleAddToMeal() {
           </template>
           <!-- ToolBar -->
           <n-flex v-if="!isLoading && !isUser" inline>
-            <n-button size="tiny" quaternary @click="handleAddToMeal">添加到我的今日菜单</n-button>
+            <n-button
+              v-if="application === 'meal_recommend'"
+              size="tiny"
+              quaternary
+              @click="handleAddToMeal"
+              >添加到我的今日菜单</n-button
+            >
           </n-flex>
         </n-flex>
       </n-flex>

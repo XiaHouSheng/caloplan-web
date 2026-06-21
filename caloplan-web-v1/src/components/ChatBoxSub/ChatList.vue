@@ -8,7 +8,8 @@ const chatStore = useChatStore();
 </script>
 
 <template>
-  <n-list :show-divider="false" ref="scrollContainer" style="height: calc(100vh - 350px); overflow: auto">
+  <n-scrollbar style="height: calc(100vh - 350px);padding-right: 12px;">
+     <n-list :show-divider="false" ref="scrollContainer"> 
     <ChatListItem
       v-for="item in chatStore.messages"
       :key="item.id"
@@ -20,6 +21,7 @@ const chatStore = useChatStore();
       :application="item.application"
     />
   </n-list>
+  </n-scrollbar>
 </template>
 
 <style scoped></style>

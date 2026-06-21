@@ -12,10 +12,12 @@ const chatStore = useChatStore();
   <n-flex vertical style="transform: translate(0)">
     <n-tabs v-model:value="chatStore.chatAppSelect" type="card">
       <n-tab-pane
-        v-for="i in chatStore.apps"
+        v-for="(name, index) in chatStore.names"
         style="padding: 0"
-        :name="`${i}`"
-      ></n-tab-pane>
+        :name="`${chatStore.apps[index]}`"
+        :tab="`${name}`"
+      >
+    </n-tab-pane>
     </n-tabs>
     <n-input
       style="border-radius: 20px; padding: 12px"
