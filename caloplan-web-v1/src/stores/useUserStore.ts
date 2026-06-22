@@ -23,7 +23,7 @@ export const useUserStore = defineStore(
     });
 
     // 是否自动计算BMR
-    const autoCalBmr = ref(true);
+    const autoCalBmr = ref(false);
 
     // BMR
     const bmr = computed(() => {

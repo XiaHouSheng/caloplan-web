@@ -126,6 +126,22 @@ const option = computed(() => ({
   ],
 }));
 
+const averageKcal = computed(() => {
+  const isNan = Number.isNaN(mealStore.day7KcalData.average);
+  if (isNan) {
+    return "0";
+  }
+  return mealStore.day7KcalData.average.toFixed(0) ?? "0";
+});
+
+const averageExpend = computed(() => {
+  const isNan = Number.isNaN(mealStore.day7ExpendData.average);
+  if (isNan) {
+    return "0";
+  }
+  return mealStore.day7ExpendData.average.toFixed(0) ?? "0";
+});
+
 const visibleEditDialog = ref(false);
 </script>
 
@@ -156,7 +172,7 @@ const visibleEditDialog = ref(false);
               <span>平均摄入</span>
               <n-flex :size="4" align="center" inline>
                 <n-text style="font-size: 18px; font-weight: bold">
-                  {{ mealStore.day7KcalData.average.toFixed(0) }}
+                  {{ averageKcal }}
                 </n-text>
                 <span>kcal/天</span>
               </n-flex>
@@ -167,7 +183,7 @@ const visibleEditDialog = ref(false);
               <span>平均消耗</span>
               <n-flex :size="4" align="center" inline>
                 <n-text style="font-size: 18px; font-weight: bold">
-                  {{ mealStore.day7ExpendData.average.toFixed(0) }}
+                  {{ averageExpend }}
                 </n-text>
                 <span>kcal/天</span>
               </n-flex>

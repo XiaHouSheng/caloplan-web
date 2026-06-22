@@ -7,10 +7,10 @@ export const useChatStore = defineStore(
   () => {
     const messages = ref<ChatMessage[]>([]);
 
-    const chatAppSelect = ref("meal_recommend");
+    const chatAppSelect = ref("chat");
     const inputMessage = ref("");
-    const apps = ["chat", "meal_recommend", "功能3", "功能4", "功能5"];
-    const names = ["聊天", "推荐餐食", "功能3", "功能4", "功能5"];
+    const apps = ["chat", "meal_recommend", "nutrition", "功能4", "功能5"];
+    const names = ["聊天", "推荐餐食", "营养素分配", "功能4", "功能5"];
 
     const lastMessage = computed(() => {
       return messages.value[messages.value.length - 1] ?? null;

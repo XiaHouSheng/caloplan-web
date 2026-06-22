@@ -3,9 +3,8 @@ import { Alert, Rainy, Send } from "@vicons/ionicons5";
 import { ref } from "vue";
 import { useChatStore } from "../../stores/useChatStore";
 import { createChatMessage } from "../../types/ChatMessage";
-import sendMessage from "../../applications/service/ChatBoxService"
+import sendMessage from "../../applications/service/ChatBoxService";
 const chatStore = useChatStore();
-
 </script>
 
 <template>
@@ -17,7 +16,7 @@ const chatStore = useChatStore();
         :name="`${chatStore.apps[index]}`"
         :tab="`${name}`"
       >
-    </n-tab-pane>
+      </n-tab-pane>
     </n-tabs>
     <n-input
       style="border-radius: 20px; padding: 12px"

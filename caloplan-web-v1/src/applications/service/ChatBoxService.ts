@@ -8,18 +8,20 @@ function sendMessage() {
   const userStore = useUserStore();
   const mealStore = useMealStore();
   const chatStore = useChatStore();
-  if (chatStore.inputMessage.trim() === "") return;
 
+  if (chatStore.inputMessage.trim() === "") return;
+  const tempInput = chatStore.inputMessage.trim();
+  chatStore.inputMessage = "";
   // 发送用户消息
   const messageBuild = {
     role: "user",
-    content: chatStore.inputMessage,
+    content: tempInput,
     messageType: "markdown",
     application: chatStore.chatAppSelect,
     isLoading: false,
   } as Omit<ChatMessage, "id" | "timestamp">;
   chatStore.addMessage(messageBuild);
-  
+
   // 助手占用消息
   const tempMessageData = {
     role: "assistant",
@@ -29,10 +31,10 @@ function sendMessage() {
     isLoading: true,
   } as Omit<ChatMessage, "id" | "timestamp">;
   const tempMessage = chatStore.addMessage(tempMessageData);
-  
+
   // 请求Agent回复
   chatSendMsg(
-    chatStore.inputMessage,
+    tempInput,
     chatStore.chatAppSelect,
     userStore.profile,
     userStore.nutritionTarget,
@@ -50,14 +52,16 @@ function sendMessage() {
         application: chatStore.chatAppSelect,
         additionalInfo: {
           meal_record: data.mealRecord,
+          nutrition: data.nutritionRecommendation,
         },
       } as ChatMessage;
+      console.log(messageBuild);
       chatStore.updateMessage(messageBuild);
     })
     .catch((err) => {
       console.error(err);
       chatStore.deleteMessage(tempMessage.id);
-    })
+    });
 }
 
 export default sendMessage;

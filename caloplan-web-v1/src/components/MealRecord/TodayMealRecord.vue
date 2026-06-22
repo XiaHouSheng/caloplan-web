@@ -22,6 +22,7 @@ const dialogStore = useDialogStore();
     </template>
     <template #default>
       <n-list
+        v-if="mealStore.todayMealRecords.length > 0"
         style="
           height: 252px;
           overflow-y: auto;
@@ -36,6 +37,11 @@ const dialogStore = useDialogStore();
           @delete="mealStore.dropTargetRecord(item.id)"
         />
       </n-list>
+      <n-empty
+        v-else
+        description="今天还未记录餐食"
+        style="height: 252px; display: flex; flex-direction: column; justify-content: center"
+      />
     </template>
   </n-card>
 </template>

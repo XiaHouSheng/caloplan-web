@@ -1,7 +1,7 @@
 <script setup>
-import Index from './pages/index.vue';
+import Index from "./pages/index.vue";
 </script>
 
 <template>
-<Index></Index>
+  <Index></Index>
 </template>

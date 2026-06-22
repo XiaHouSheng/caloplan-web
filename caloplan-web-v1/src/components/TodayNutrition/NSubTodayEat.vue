@@ -13,7 +13,7 @@ const userStore = useUserStore();
 const mealStore = useMealStore();
 const nutritionTarget = computed(() => userStore.nutritionTarget ?? {});
 const todayNutritionSum = computed(() => mealStore.todayNutritionSum ?? {});
-const deltaKcal = nutritionTarget.value.dailyKcal - todayNutritionSum.value.kcal;
+const deltaKcal = computed(() => nutritionTarget.value.dailyKcal - todayNutritionSum.value.kcal);
 const rate = Math.round(
   (todayNutritionSum.value.kcal / nutritionTarget.value.dailyKcal) * 100,
 );
@@ -49,7 +49,6 @@ const option = computed(() => ({
           total: {
             fontSize: 24,
             fontWeight: 800,
-            color: "#111827",
             lineHeight: 34,
           },
         },

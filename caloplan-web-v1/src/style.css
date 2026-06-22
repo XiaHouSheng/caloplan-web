@@ -36,13 +36,19 @@ body {
   scrollbar-color: var(--color-text) var(--color-body);
 }
 
+/* ========= Markdown ========= */
+
 .markdown-body {
   max-width: 860px;
   margin: 0 auto;
   line-height: 1.8;
   font-size: 16px;
   color: #24292f;
-  background: #fff;
+  background: transparent;
+}
+
+html[data-theme="dark"] .markdown-body {
+  color: #e6e6e6;
 }
 
 .markdown-body h1,
@@ -60,10 +66,18 @@ body {
   border-bottom: 1px solid #d0d7de;
 }
 
+html[data-theme="dark"] .markdown-body h1 {
+  border-bottom-color: #444;
+}
+
 .markdown-body h2 {
   font-size: 1.5em;
   padding-bottom: 0.3em;
   border-bottom: 1px solid #d8dee4;
+}
+
+html[data-theme="dark"] .markdown-body h2 {
+  border-bottom-color: #444;
 }
 
 .markdown-body h3 {
@@ -92,6 +106,12 @@ body {
   border-left: 4px solid #d0d7de;
 }
 
+html[data-theme="dark"] .markdown-body blockquote {
+  color: #aaa;
+  background: #2a2a2a;
+  border-left-color: #555;
+}
+
 .markdown-body code {
   padding: 0.2em 0.4em;
   font-size: 85%;
@@ -99,11 +119,19 @@ body {
   border-radius: 6px;
 }
 
+html[data-theme="dark"] .markdown-body code {
+  background: #333;
+}
+
 .markdown-body pre {
   padding: 16px;
   overflow: auto;
   background: #f6f8fa;
   border-radius: 8px;
+}
+
+html[data-theme="dark"] .markdown-body pre {
+  background: #1e1e1e;
 }
 
 .markdown-body pre code {
@@ -123,14 +151,27 @@ body {
   border: 1px solid #d0d7de;
 }
 
+html[data-theme="dark"] .markdown-body th,
+html[data-theme="dark"] .markdown-body td {
+  border-color: #444;
+}
+
 .markdown-body th {
   background: #f6f8fa;
   font-weight: 600;
 }
 
+html[data-theme="dark"] .markdown-body th {
+  background: #2a2a2a;
+}
+
 .markdown-body a {
   color: #0969da;
   text-decoration: none;
+}
+
+html[data-theme="dark"] .markdown-body a {
+  color: #58a6ff;
 }
 
 .markdown-body a:hover {
